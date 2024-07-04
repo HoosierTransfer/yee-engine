@@ -14,6 +14,8 @@ public:
         return *this->shader;
     }
 
+    Material() = default;
+
     Material(const std::string &shaderName) : shader(std::make_unique<Shader>(shaderName)) {
         this->shader->compile();
     }

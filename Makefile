@@ -1,7 +1,7 @@
 CC := gcc
 CXX := g++
-CFLAGS := -std=c11 -Werror -g -Iinclude
-CXXFLAGS := -std=c++17 -Werror -g -Iinclude
+CFLAGS := -std=c11 -Werror -g -Iinclude -MMD
+CXXFLAGS := -std=c++17 -Werror -g -Iinclude -MMD
 LDFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 BIN_DIR := bin
 SRC_DIR := src
@@ -14,6 +14,7 @@ C_SRC := $(shell find $(SRC_DIR) -name '*.c')
 CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CPP_SRC))
 C_OBJ := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_SRC))
 OBJ := $(CPP_OBJ) $(C_OBJ)
+DEP := $(OBJ:.o=.d)  # Add this line to handle dependencies
 
 TARGET := main
 
@@ -32,6 +33,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(DEP)
+
+-include $(DEP)
 
 .PHONY: all clean

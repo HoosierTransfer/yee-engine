@@ -1,6 +1,7 @@
 #pragma once
 
 #include <light/Light.hpp>
+#include <glm/glm.hpp>
 
 class DirectionalLight : public Light {
 private:

@@ -1,6 +1,7 @@
 #include <Scene.hpp>
 
 #include <light/DirectionalLight.hpp>
+#include <light/PointLight.hpp>
 #include <ShaderType.hpp>
 #include <material/LitMaterial.hpp>
 
@@ -43,16 +44,23 @@ void Scene::applyLighting() {
 }
 
 void Scene::applyLighting(Material &material) {
+    if (!instanceof<LitMaterial>(&material)) return;
+    int directionalLights = 0;
+    int pointLights = 0;
     for (int i = 0; i < this->lights.size(); i++) {
         if (instanceof<DirectionalLight>(this->lights[i].get())) {
-            if (instanceof<DirectionalLight>(this->lights[i].get())) {
-                if (std::stoi(material.getShader().getDefine("DIRECTIONAL_LIGHTS", ShaderType::FRAGMENT)) < i) {
-                    continue;
-                }
+            directionalLights++;
+            if (std::stoi(material.getShader().getDefine("DIRECTIONAL_LIGHTS", ShaderType::FRAGMENT)) < directionalLights) {
+                continue;
             }
-            // std::cout << "Applying lighting for light " << i << std::endl;
-            this->lights[i]->applyLighting(material, i);
+        } else if (instanceof<PointLight>(this->lights[i].get())) {
+            pointLights++;
+            if (std::stoi(material.getShader().getDefine("POINT_LIGHTS", ShaderType::FRAGMENT)) < pointLights) {
+                continue;
+            }
         }
+
+        this->lights[i]->applyLighting(material, i);
     }
 }
 

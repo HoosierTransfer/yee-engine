@@ -61,14 +61,18 @@ Shader::Shader(const string &shaderName) {
 }
 
 void Shader::addDefine(const string &name, const string &value, ShaderType shaderType) {
+    std::cout << "Added define " << name << " " << value << std::endl;
     auto addOrReplaceDefine = [&](string& shaderCode) {
-        size_t pos = shaderCode.find("#define " + name);
+        size_t pos = shaderCode.find("#version");
         if (pos != string::npos) {
-            size_t end = shaderCode.find("\n", pos);
-            shaderCode.replace(pos, end - pos, "#define " + name + " " + value + "\n");
-        } else {
-            pos = shaderCode.find("#version");
-            shaderCode.insert(pos, "#define " + name + " " + value + "\n");
+            pos = shaderCode.find("\n", pos);
+            size_t definePos = shaderCode.find("#define " + name);
+            if (definePos != string::npos) {
+                size_t end = shaderCode.find("\n", definePos);
+                shaderCode.replace(definePos, end - definePos, "#define " + name + " " + value);
+            } else {
+                shaderCode.insert(pos + 1, "#define " + name + " " + value + "\n");
+            }
         }
     };
 
@@ -84,6 +88,7 @@ void Shader::addDefine(const string &name, const string &value, ShaderType shade
         default:
             break;
     }
+    
 }
 
 void Shader::removeDefine(const string &name, ShaderType shaderType) {

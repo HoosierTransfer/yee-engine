@@ -1,8 +1,7 @@
 #pragma once
 
 #include <material/Material.hpp>
-
-using namespace std;
+#include <App.hpp>
 
 class LitMaterial : public Material {
 private:
@@ -14,6 +13,7 @@ public:
     LitMaterial() : Material("lit") {}
 
     void applyUniforms() override {
+        this->getShader().setVec3("viewPos", App::getInstance()->getMainCamera().getPosition());
         this->getShader().setVec3("material.ambient", this->ambient);
         this->getShader().setVec3("material.diffuse", this->diffuse);
         this->getShader().setVec3("material.specular", this->specular);
@@ -59,5 +59,9 @@ public:
     void use() override {
         Material::use();
         this->applyUniforms();
+    }
+
+    bool isLit() {
+        return true;
     }
 };
